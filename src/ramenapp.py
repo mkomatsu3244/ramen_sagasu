@@ -1,43 +1,41 @@
 import pandas as pd
 import numpy as np
-import MeCab
-import ipadic
+from janome.tokenizer import Tokenizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
 from scipy.sparse import load_npz
 from flask import Flask, request, render_template, redirect
 
 # ローカル用
-""" tagger = MeCab.Tagger('./src/ipadic')
 df_ldcc = pd.read_csv('./src/df_ramen.csv')
 sim = np.load('./src/sim_matrix.npy')
 X = load_npz("./src/sparse_matrix.npz")
 with open("./src/vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f) """
+    vectorizer = pickle.load(f)
 # デプロイ用
-tagger = MeCab.Tagger('./ipadic')
-df_ldcc = pd.read_csv('./df_ramen.csv')
+""" df_ldcc = pd.read_csv('./df_ramen.csv')
 sim = np.load('./sim_matrix.npy')
 X = load_npz("./sparse_matrix.npz")
 with open("./vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f)
+    vectorizer = pickle.load(f) """
 
+tokenizer = Tokenizer()
 for i in range(sim.shape[0]):
     sim[i, i] = 0.0
 idx = np.argsort(sim, axis=1) # 類似度高い順にソート
 idx = idx[:, ::-1] # ソートの逆順に
 
 def text2words(intext):
-    tmptext = tagger.parse(intext)
+    tokens = tokenizer.tokenize(intext)
     outtext = ""
-    for line in tmptext.split('\n')[:-2]:  #最後の"EOS"と""は除外
-        a = line.split(',')
-        if '\t名詞' in a[0] or '\t動詞' in a[0] or '\t形容詞' in a[0]:
-            if a[6] == '*':
-                a = a[0].split('\t')
-                outtext += ' ' + a[0]
-            else:
-                outtext += ' ' + a[6]
+    for token in tokens:
+        # 名詞、動詞、形容詞の基本形を取得
+        if token.part_of_speech.split(',')[0] in ['名詞', '動詞', '形容詞']:
+            if token.part_of_speech.split(',')[1] != '数':  # 数を含む名詞を除外
+                if token.base_form == '*':  # 基本形が'*'の場合は、表層形を使用
+                    outtext += ' ' + token.surface
+                else:
+                    outtext += ' ' + token.base_form
     return outtext
 
 app = Flask(__name__)
