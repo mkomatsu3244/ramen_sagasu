@@ -7,17 +7,17 @@ from scipy.sparse import load_npz
 from flask import Flask, request, render_template, redirect
 
 # ローカル用
-df_ldcc = pd.read_csv('./src/df_ramen.csv')
+""" df_ldcc = pd.read_csv('./src/df_ramen.csv')
 sim = np.load('./src/sim_matrix.npy')
 X = load_npz("./src/sparse_matrix.npz")
 with open("./src/vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f)
+    vectorizer = pickle.load(f) """
 # デプロイ用
-""" df_ldcc = pd.read_csv('./df_ramen.csv')
+df_ldcc = pd.read_csv('./df_ramen.csv')
 sim = np.load('./sim_matrix.npy')
 X = load_npz("./sparse_matrix.npz")
 with open("./vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f) """
+    vectorizer = pickle.load(f)
 
 tokenizer = Tokenizer()
 for i in range(sim.shape[0]):
