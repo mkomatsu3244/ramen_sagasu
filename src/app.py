@@ -7,17 +7,17 @@ from scipy.sparse import load_npz
 from flask import Flask, request, render_template, redirect
 
 # ローカル用
-""" df_ldcc = pd.read_csv('./src/df_ramen.csv')
+df_ldcc = pd.read_csv('./src/df_ramen.csv')
 sim = np.load('./src/sim_matrix.npy')
 X = load_npz("./src/sparse_matrix.npz")
 with open("./src/vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f) """
+    vectorizer = pickle.load(f)
 # デプロイ用
-df_ldcc = pd.read_csv('./df_ramen.csv')
+""" df_ldcc = pd.read_csv('./df_ramen.csv')
 sim = np.load('./sim_matrix.npy')
 X = load_npz("./sparse_matrix.npz")
 with open("./vectorizer.pkl", "rb") as f:
-    vectorizer = pickle.load(f)
+    vectorizer = pickle.load(f) """
 
 tokenizer = Tokenizer()
 for i in range(sim.shape[0]):
@@ -52,11 +52,16 @@ def index():
     return render_template('index.html')
 
 def search_by_store_name(store_name):
-    # 店名がdf_ldccに存在するか確認
-    if store_name not in df_ldcc['store_name'].values:
+    # 部分的に一致する店名を検索
+    matched_stores = [s for s in df_ldcc['store_name'].values if store_name in s]
+    
+    # 一致する店名がない場合
+    if not matched_stores:
         return ["申し訳ありません。店名を正確に入力してください"]
     
-    keyid = df_ldcc[df_ldcc['store_name'] == store_name].index[0]
+    # 最初にヒットする店舗を使用
+    matched_store_name = matched_stores[0]
+    keyid = df_ldcc[df_ldcc['store_name'] == matched_store_name].index[0]
     results = []
     for i in range(10):
         store = df_ldcc['store_name'][idx[keyid, i]]

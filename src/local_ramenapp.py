@@ -43,9 +43,6 @@ for i in range(10):  # 類似度の高い店を抽出
     ward = df_ldcc['ward'][idx[keyid, i]]
     print(f"類似度：{sim[keyid, idx[keyid, i]]:.3f} ,店名：【 {store_name} 】, {ward} , {score}")
 
-""" for i in range(10):  #類似度の高い文書を抽出
-    print(f"{sim[keyid, idx[keyid, i]]:.3f}\t[{idx[keyid, i]:04d}] {df_ldcc['store_name'][idx[keyid, i]]}") """
-
 ### 任意のワードや文章を入れるとそれと類似度の高い店を表示
 
 X = load_npz("./src/sparse_matrix.npz")
@@ -64,6 +61,3 @@ for i in range(10):
     ward = df_ldcc['ward'][idx1[i]]
     print(f"類似度: {sim1[idx1[i]]:.3f}, 店名:【 {store_name} 】, {ward} , {score}")
 
-""" for i in range(10):
-  print(f"{sim1[idx1[i]]:.3f}\t[{idx1[i]:04d}] {df_ldcc['store_name'][idx1[i]]}")  # .3fは小数点以下3桁
- """
