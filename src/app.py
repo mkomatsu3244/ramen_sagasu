@@ -30,7 +30,7 @@ def text2words(intext):
     outtext = ""
     for token in tokens:
         # 名詞、動詞、形容詞の基本形を取得
-        if token.part_of_speech.split(',')[0] in ['名詞', '動詞', '形容詞']:
+        if token.part_of_speech.split(',')[0] in ['名詞', '動詞', '形容詞', '副詞']:
             if token.part_of_speech.split(',')[1] != '数':  # 数を含む名詞を除外
                 if token.base_form == '*':  # 基本形が'*'の場合は、表層形を使用
                     outtext += ' ' + token.surface
